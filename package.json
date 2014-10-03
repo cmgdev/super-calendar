@@ -1,0 +1,9 @@
+{
+	"name": "super-calendar",
+	"description": "calendar to include lots of info i want to see",
+	"version": "0.0.1",
+	"private": true,
+	"dependencies": {
+		"express": "4.9.5"
+	}
+}
