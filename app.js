@@ -14,6 +14,7 @@ app.get('/weather', function(req, res){
 	path = 'http://api.openweathermap.org/data/2.5/forecast/daily?lat=' + lat + '&lon=' + lon + '&cnt=10&mode=json';
 	console.log('Using path ' + path);
 
+
 	http.get(path, function(getRes){
 		console.log("Got response: " + getRes.statusCode);
 		data = "";
