@@ -30,7 +30,7 @@ app.get('/weather', function(req, res){
 			$ = cheerio.load(recvJson);
 			$(recvJson).each(function(){
 				sendJson.push({
-					title: this.temp.max + '/' + this.temp.min,
+					title: kelvinToFahrenheit(this.temp.max) + '/' + kelvinToFahrenheit(this.temp.min),
 					start: moment(this.dt, 'X')
 				});
 			});			
@@ -47,3 +47,10 @@ app.get('/weather', function(req, res){
 		res.send(errorMsg);
 	});
 });
+
+var kelvinToFahrenheit = function(k){
+	f = parseInt(((k - 273.15)*1.8)+32);
+	//console.log(k + ' = ' + f);
+	return f;
+};
+
