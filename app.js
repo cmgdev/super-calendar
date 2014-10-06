@@ -30,18 +30,18 @@ app.get('/weather', function(req, res){
 			$ = cheerio.load(recvJson);
 			$(recvJson).each(function(){
 				sendJson.push({
-					title: this.temp.morn,
+					title: this.temp.morn + '°',
 					start: moment(this.dt, 'X').hour(6).format(),
 					color: '#448A88',
 					className: 'weatherIcon',
-					icon: this.weather.icon
+					icon: this.weather[0].icon
 				});
 				sendJson.push({
-					title: this.temp.eve,
+					title: this.temp.eve + '°',
 					start: moment(this.dt, 'X').hour(18).format(),
 					color: '#266D7F',
 					className: 'weatherIcon',
-					icon: this.weather.icon
+					icon: this.weather[0].icon
 				});
 			});			
 
