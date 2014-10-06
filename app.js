@@ -4,6 +4,7 @@ var cheerio = require('cheerio');
 var moment = require('moment');
 
 var app = express();
+app.use('/web', express.static(__dirname + '/web'));
 
 var server = app.listen(3000, function(){
 	console.log('Listening on port %d', server.address().port);
