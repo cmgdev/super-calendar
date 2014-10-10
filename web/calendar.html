@@ -17,13 +17,12 @@
 		<script>
 			$(document).ready(function() {
 
-				var latitude = 36.17;
-				var longitude = -86.78;
 				// page is now ready, initialize the calendar...
 
 				$('#calendar').fullCalendar({
 					// put your options and callbacks here
 					eventTextColor: '#002250',
+					timezone: 'local',
 					eventSources: [
 					{
 						events: function(start, end, timezone, callback){
