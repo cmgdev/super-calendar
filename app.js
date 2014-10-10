@@ -72,12 +72,12 @@ app.get('/suncalc', function(req, res){
 	        var times = suncalc.getTimes(current.toDate(), lat, lon);
                 sendJson.push({
                 	title: 'Sunrise',
-                        start: times.sunrise,
+                        start: moment(times.sunrise).format(),
                         color: '#CFBA9F'
                 });
                 sendJson.push({
                         title: 'Sunset',
-                        start: times.sunset,
+                        start: moment(times.sunset).format(),
                         color: '#7AAF9B'
                 });
                 current = current.add(1, 'days');
