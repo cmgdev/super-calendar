@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Sunrise/Sunset Calendar</title>
+		
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.3/moment.min.js"></script>
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.min.js"></script>
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+		
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+		<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/fullcalendar/2.1.1/fullcalendar.min.css">
+		<link rel="stylesheet" href="css/calendar.css">
+		
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<script>
+			$(document).ready(function() {
+
+				var latitude = 36.17;
+				var longitude = -86.78;
+				// page is now ready, initialize the calendar...
+
+				$('#calendar').fullCalendar({
+					// put your options and callbacks here
+					eventTextColor: '#002250',
+					eventSources: [
+					{
+						events: function(start, end, timezone, callback){
+							var events = [];
+							$.ajax({
+                                                                url: '/suncalc?start=' + start.toISOString() + '&end=' + end.toISOString(),
+                                                                type: 'GET',
+                                                                dataType: 'jsonp',
+                                                                success: function(result){
+                                                                        e = JSON.parse(result);
+                                                                        $(e).each(function(){
+                                                                                events.push({
+                                                                                        title: this.title,
+                                                                                        start: this.start,
+                                                                                        color: this.color,
+                                                                                });
+                                                                        });
+                                                                        callback(events);
+                                                                }
+                                                        });
+					}},
+					{
+						events:function(start, end, timezone, callback){
+							var events = [];
+							$.ajax({
+								url: '/weather?lat=' + latitude + '&lon=' + longitude,
+								type: 'GET',
+								dataType: 'jsonp',
+								success: function(result){
+									e = JSON.parse(result);
+									$(e).each(function(){
+										events.push({
+											title: this.title,
+											start: this.start,
+											color: this.color,
+											className: this.className,
+											icon: this.icon
+										});
+									});
+									callback(events);
+								}
+							});
+						},
+						
+					}
+					],
+					eventRender: function(event, element) {
+						if(event.icon != undefined){
+							img = "url('http://openweathermap.org/img/w/" + event.icon + ".png')";
+							$(element).css({'background-image': img});
+						}
+					},
+					eventAfterRender: function(event, element){
+						if(event.icon != undefined){
+							$($(element).find('div.fc-content > span.fc-title')[0]).replaceWith("<span class='fc-title'>" + event.title + "</span>");
+						}
+					}
+				});				
+			});
+		</script>
+	</head>
+
+	<body>
+		<div class="container">
+			<div id='calendar'></div>
+		</div>
+	
+	</body>
+	
+</html>

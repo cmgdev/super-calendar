@@ -1,0 +1,6 @@
+.weatherIcon{
+	background-repeat: no-repeat;
+	background-position: right;
+	height: 30px;
+	background-size: contain;
+}
