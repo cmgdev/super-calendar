@@ -6,8 +6,9 @@ var suncalc = require('./web/js/suncalc.js');
 
 var app = express();
 app.use('/web', express.static(__dirname + '/web'));
+app.set('port', (process.env.PORT || 5000));
 
-var server = app.listen(3000, function(){
+var server = app.listen(app.get('port'), function(){
 	console.log('Listening on port %d', server.address().port);
 });
 
