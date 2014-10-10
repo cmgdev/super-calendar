@@ -15,7 +15,7 @@ app.get('/weather', function(req, res){
 	lon = req.param('lon', '139');
 	callback = req.param('callback');
 
-	path = 'http://api.openweathermap.org/data/2.5/forecast/daily?lat=' + lat + '&lon=' + lon + '&cnt=10&mode=json&units=imperial';
+	path = 'http://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&cnt=10&mode=json&units=imperial';
 	console.log('Using path ' + path);
 
 	http.get(path, function(getRes){
@@ -30,22 +30,18 @@ app.get('/weather', function(req, res){
 
 			$ = cheerio.load(recvJson);
 			$(recvJson).each(function(){
-				sendJson.push({
-					title: this.temp.morn + '°',
-					start: moment(this.dt, 'X').hour(6).format(),
-					color: '#448A88',
-					className: 'weatherIcon',
-					icon: this.weather[0].icon
-				});
-				sendJson.push({
-					title: this.temp.eve + '°',
-					start: moment(this.dt, 'X').hour(18).format(),
-					color: '#266D7F',
-					className: 'weatherIcon',
-					icon: this.weather[0].icon
-				});
+				currentHour = moment(this.dt, 'X').hour();
+//				if(currentHour == '4' || currentHour == '7' ||
+//				   currentHour == '16'|| currentHour == '19'){
+					sendJson.push({
+						title: this.main.temp + '&deg; <br/> <i> ' + this.weather[0].description + ' </i> ',
+						start: moment(this.dt, 'X').format(),
+						color: '#448A88',
+						className: 'weatherIcon',
+						icon: this.weather[0].icon
+					});
+//				}
 			});			
-
 
 			sendTxt = callback + '(\'' + JSON.stringify(sendJson) + '\');';
 			console.log(sendTxt);
