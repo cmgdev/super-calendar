@@ -49,7 +49,7 @@
 						events:function(start, end, timezone, callback){
 							var events = [];
 							$.ajax({
-								url: '/weather?lat=' + latitude + '&lon=' + longitude,
+								url: '/weather',
 								type: 'GET',
 								dataType: 'jsonp',
 								success: function(result){
