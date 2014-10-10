@@ -2,6 +2,7 @@ var express = require('express');
 var http = require('http');
 var cheerio = require('cheerio');
 var moment = require('moment');
+var suncalc = require('./web/js/suncalc.js');
 
 var app = express();
 app.use('/web', express.static(__dirname + '/web'));
@@ -10,9 +11,12 @@ var server = app.listen(3000, function(){
 	console.log('Listening on port %d', server.address().port);
 });
 
+var LAT = process.env.LAT;
+var LON = process.env.LON;
+
 app.get('/weather', function(req, res){
-	lat = req.param('lat', '35');
-	lon = req.param('lon', '139');
+	lat = req.param('lat', LAT);
+	lon = req.param('lon', LON);
 	callback = req.param('callback');
 
 	path = 'http://api.openweathermap.org/data/2.5/forecast?lat=' + lat + '&lon=' + lon + '&cnt=10&mode=json&units=imperial';
@@ -30,17 +34,13 @@ app.get('/weather', function(req, res){
 
 			$ = cheerio.load(recvJson);
 			$(recvJson).each(function(){
-				currentHour = moment(this.dt, 'X').hour();
-//				if(currentHour == '4' || currentHour == '7' ||
-//				   currentHour == '16'|| currentHour == '19'){
-					sendJson.push({
-						title: this.main.temp + '&deg; <br/> <i> ' + this.weather[0].description + ' </i> ',
-						start: moment(this.dt, 'X').format(),
-						color: '#448A88',
-						className: 'weatherIcon',
-						icon: this.weather[0].icon
-					});
-//				}
+				sendJson.push({
+					title: this.main.temp + '&deg; <br/> <i> ' + this.weather[0].description + ' </i> ',
+					start: moment(this.dt, 'X').format(),
+					color: '#448A88',
+					className: 'weatherIcon',
+					icon: this.weather[0].icon
+				});
 			});			
 
 			sendTxt = callback + '(\'' + JSON.stringify(sendJson) + '\');';
@@ -55,9 +55,35 @@ app.get('/weather', function(req, res){
 	});
 });
 
-var kelvinToFahrenheit = function(k){
-	f = parseInt(((k - 273.15)*1.8)+32);
-	//console.log(k + ' = ' + f);
-	return f;
-};
+app.get('/suncalc', function(req, res){
+        lat = req.param('lat', LAT);
+        lon = req.param('lon', LON);
+	start = moment(req.param('start', moment()));
+	end = moment(req.param('end', moment().add(1, 'M')));
+        callback = req.param('callback');
+	
+	console.log('start is ' + start.toISOString());
+	console.log('end is ' + end.toISOString());
 
+	sendJson = [];
+	var current = start;
+        while(current.isBefore(end)){
+	        var times = suncalc.getTimes(current.toDate(), lat, lon);
+                sendJson.push({
+                	title: 'Sunrise',
+                        start: times.sunrise,
+                        color: '#CFBA9F'
+                });
+                sendJson.push({
+                        title: 'Sunset',
+                        start: times.sunset,
+                        color: '#7AAF9B'
+                });
+                current = current.add(1, 'days');
+        }
+
+	sendTxt = callback + '(\'' + JSON.stringify(sendJson) + '\');';
+        console.log(sendTxt);
+	res.set('Content-Type', 'application/javascript');
+        res.send(sendTxt);
+});
